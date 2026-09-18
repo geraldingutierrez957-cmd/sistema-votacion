@@ -1,3 +1,6 @@
+import json
+from datetime import datetime
+
 votos = {}
 votantes_registrados = set()
 
@@ -10,3 +13,29 @@ def registrar_voto(nombre, opcion):
     votos[opcion] = votos.get(opcion, 0) + 1
     print(f"✅ Voto de {nombre} registrado por: {opcion}")
     return True
+
+def ver_resultados():
+    """Muestra los resultados con porcentajes."""
+    total = sum(votos.values())
+    if total == 0:
+        print("📊 No hay votos registrados aún.")
+        return
+    print("\n📊 RESULTADOS:")
+    for opcion, conteo in votos.items():
+        porcentaje = (conteo / total) * 100
+        print(f"  {opcion}: {conteo} votos ({porcentaje:.2f}%)")
+
+def reiniciar_votacion():
+    """Reinicia votos y guarda historial en archivo."""
+    global votos
+    if votos:
+        historial = {
+            "fecha": datetime.now().isoformat(),
+            "resultados": votos.copy()
+        }
+        with open("historial.json", "a") as f:
+            f.write(json.dumps(historial) + "\n")
+        print("💾 Historial guardado en historial.json")
+    votos.clear()
+    votantes_registrados.clear()
+    print("🔄 Votacion reiniciada.")
